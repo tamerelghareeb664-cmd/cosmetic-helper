@@ -154,6 +154,8 @@
         <button onclick="generateQR()">توليد كود الطلب (QR)</button>
         
         <div id="qrcode"></div>
+        
+        <button id="download-btn" onclick="downloadQR()" class="btn-secondary hidden" style="margin-top: 15px; background-color: #cbd5e1;">حفظ الكود كصورة</button>
     </div>
 </div>
 
@@ -247,6 +249,26 @@
             colorDark : "#009688",
             colorLight : "#ffffff"
         });
+
+        setTimeout(() => {
+            document.getElementById('download-btn').classList.remove('hidden');
+        }, 300);
+    }
+
+    function downloadQR() {
+        const qrContainer = document.getElementById('qrcode');
+        const img = qrContainer.querySelector('img');
+        
+        if (img && img.src) {
+            const link = document.createElement('a');
+            link.href = img.src;
+            link.download = 'CosmeticERP_Order.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            alert("برجاء الانتظار حتى يكتمل رسم الكود");
+        }
     }
 
     function clearData() {
