@@ -1,0 +1,145 @@
+```html
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المساعد الذكي - CosmeticERP</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f5f7fa; text-align: center; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        button { background-color: #009688; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; width: 100%; }
+        select, input { width: 90%; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        #qrcode { margin-top: 20px; display: flex; justify-content: center; }
+        .hidden { display: none; }
+        .item-row { display: flex; gap: 10px; margin-top: 10px; }
+        .item-row select { flex: 2; }
+        .item-row input { flex: 1; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>مساعد CosmeticERP</h2>
+    
+    <div id="setup-section">
+        <p>لم يتم العثور على بيانات. برجاء رفع ملف المساعد (JSON) الذي أرسله المدير.</p>
+        <input type="file" id="file-input" accept=".json">
+    </div>
+
+    <div id="app-section" class="hidden">
+        <h3 id="mode-title">تجهيز طلب</h3>
+        <button onclick="clearData()" style="background-color: #ff4d4f; margin-bottom: 20px;">مسح البيانات القديمة ورفع ملف جديد</button>
+        
+        <div id="items-container">
+        </div>
+        
+        <button onclick="addNewRow()" style="background-color: #ddd; color: black;">+ إضافة صنف آخر</button>
+        <button onclick="generateQR()">توليد كود الطلب (QR)</button>
+        
+        <div id="qrcode"></div>
+    </div>
+</div>
+
+<script>
+    let catalog = [];
+    let appMode = 'SALE'; 
+
+    window.onload = function() {
+        const savedData = localStorage.getItem('helperCatalog');
+        if (savedData) {
+            catalog = JSON.parse(savedData);
+            startApp();
+        }
+    };
+
+    document.getElementById('file-input').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const json = JSON.parse(e.target.result);
+                if(json.catalog) {
+                    catalog = json.catalog;
+                    localStorage.setItem('helperCatalog', JSON.stringify(catalog));
+                    startApp();
+                } else {
+                    alert("ملف غير صالح");
+                }
+            } catch (err) {
+                alert("حدث خطأ في قراءة الملف");
+            }
+        };
+        reader.readAsText(file);
+    });
+
+    function startApp() {
+        document.getElementById('setup-section').classList.add('hidden');
+        document.getElementById('app-section').classList.remove('hidden');
+        
+        if(catalog.length > 0) {
+            appMode = catalog[0].type;
+            document.getElementById('mode-title').innerText = appMode === 'SALE' ? "تجهيز فاتورة مبيعات" : "جرد مخزن / إعادة تخزين";
+        }
+        addNewRow();
+    }
+
+    function addNewRow() {
+        const container = document.getElementById('items-container');
+        const row = document.createElement('div');
+        row.className = 'item-row';
+        
+        let selectHtml = `<select class="item-select"><option value="">اختر الصنف...</option>`;
+        catalog.forEach(item => {
+            selectHtml += `<option value="${item.id}">${item.name}</option>`;
+        });
+        selectHtml += `</select>`;
+        
+        row.innerHTML = selectHtml + `<input type="number" class="item-qty" placeholder="الكمية" min="1">`;
+        container.appendChild(row);
+    }
+
+    function generateQR() {
+        const rows = document.querySelectorAll('.item-row');
+        let selectedItems = [];
+        
+        rows.forEach(row => {
+            const id = row.querySelector('.item-select').value;
+            const qty = parseFloat(row.querySelector('.item-qty').value);
+            if (id && qty > 0) {
+                selectedItems.push({ id: id, qty: qty });
+            }
+        });
+
+        if (selectedItems.length === 0) {
+            alert("برجاء اختيار صنف وكمية صحيحة");
+            return;
+        }
+
+        const payload = {
+            type: appMode,
+            items: selectedItems
+        };
+
+        document.getElementById('qrcode').innerHTML = "";
+        
+        new QRCode(document.getElementById('qrcode'), {
+            text: JSON.stringify(payload),
+            width: 250,
+            height: 250
+        });
+    }
+
+    function clearData() {
+        if(confirm("هل أنت متأكد من مسح البيانات لرفع ملف جديد؟")) {
+            localStorage.removeItem('helperCatalog');
+            location.reload();
+        }
+    }
+</script>
+
+</body>
+</html>
+```
