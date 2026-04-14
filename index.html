@@ -1,41 +1,156 @@
-
+```h
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المساعد الذكي - CosmeticERP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f5f7fa; text-align: center; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
-        button { background-color: #009688; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; width: 100%; }
-        select, input { width: 90%; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 5px; }
-        #qrcode { margin-top: 20px; display: flex; justify-content: center; }
+        :root {
+            --primary: #009688;
+            --primary-dark: #00796b;
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --danger: #ff4d4f;
+            --border: #e2e8f0;
+        }
+
+        body { 
+            font-family: 'Cairo', sans-serif; 
+            padding: 20px; 
+            background-color: var(--bg-color); 
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 90vh;
+            margin: 0;
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 30px 20px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+            width: 100%;
+            max-width: 400px; 
+            border-top: 5px solid var(--primary);
+            text-align: center;
+        }
+
+        h2 { margin-top: 0; color: var(--primary); font-weight: 700; }
+        h3 { color: var(--text-main); font-weight: 600; }
+        p { color: var(--text-muted); font-size: 14px; line-height: 1.6; }
+
+        button { 
+            background-color: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 12px 20px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            margin-top: 15px; 
+            width: 100%; 
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        button:active { transform: scale(0.98); }
+        button:hover { background-color: var(--primary-dark); }
+        
+        .btn-danger { background-color: var(--danger); margin-bottom: 20px; }
+        .btn-danger:hover { background-color: #d9363e; }
+        
+        .btn-secondary { background-color: #e2e8f0; color: var(--text-main); }
+        .btn-secondary:hover { background-color: #cbd5e1; }
+
+        select, input { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 10px; 
+            border: 1px solid var(--border); 
+            border-radius: 8px; 
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus, input:focus { border-color: var(--primary); }
+
+        .file-upload-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .file-upload-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .btn-upload { background-color: var(--primary); }
+
+        #qrcode { 
+            margin-top: 25px; 
+            display: flex; 
+            justify-content: center; 
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
         .hidden { display: none; }
-        .item-row { display: flex; gap: 10px; margin-top: 10px; }
-        .item-row select { flex: 2; }
-        .item-row input { flex: 1; }
+        
+        .item-row { 
+            display: flex; 
+            gap: 10px; 
+            margin-top: 15px; 
+            align-items: center;
+        }
+        .item-row select { flex: 2; margin-top: 0; }
+        .item-row input { flex: 1; margin-top: 0; text-align: center; }
+
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>مساعد CosmeticERP</h2>
+<div class="card fade-in">
+    <h2>Cosmetic Helper</h2>
     
     <div id="setup-section">
-        <p>لم يتم العثور على بيانات. برجاء رفع ملف المساعد (JSON) الذي أرسله المدير.</p>
-        <input type="file" id="file-input" accept=".json">
+        <p>أهلاً بك! لتهيئة المساعد، برجاء رفع ملف قاعدة البيانات (JSON) الذي أرسله لك المدير.</p>
+        <div class="file-upload-wrapper">
+            <button class="btn-upload">اختيار ملف البيانات</button>
+            <input type="file" id="file-input" accept=".json">
+        </div>
     </div>
 
     <div id="app-section" class="hidden">
         <h3 id="mode-title">تجهيز طلب</h3>
-        <button onclick="clearData()" style="background-color: #ff4d4f; margin-bottom: 20px;">مسح البيانات القديمة ورفع ملف جديد</button>
+        <button onclick="clearData()" class="btn-danger">تحديث / رفع ملف بيانات جديد</button>
         
         <div id="items-container">
         </div>
         
-        <button onclick="addNewRow()" style="background-color: #ddd; color: black;">+ إضافة صنف آخر</button>
+        <button onclick="addNewRow()" class="btn-secondary">+ إضافة صنف آخر</button>
         <button onclick="generateQR()">توليد كود الطلب (QR)</button>
         
         <div id="qrcode"></div>
@@ -89,7 +204,7 @@
     function addNewRow() {
         const container = document.getElementById('items-container');
         const row = document.createElement('div');
-        row.className = 'item-row';
+        row.className = 'item-row fade-in';
         
         let selectHtml = `<select class="item-select"><option value="">اختر الصنف...</option>`;
         catalog.forEach(item => {
@@ -127,8 +242,10 @@
         
         new QRCode(document.getElementById('qrcode'), {
             text: JSON.stringify(payload),
-            width: 250,
-            height: 250
+            width: 200,
+            height: 200,
+            colorDark : "#009688",
+            colorLight : "#ffffff"
         });
     }
 
