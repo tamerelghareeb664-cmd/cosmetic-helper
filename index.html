@@ -252,16 +252,25 @@
 
         setTimeout(() => {
             document.getElementById('download-btn').classList.remove('hidden');
-        }, 300);
+        }, 500);
     }
 
     function downloadQR() {
         const qrContainer = document.getElementById('qrcode');
+        const canvas = qrContainer.querySelector('canvas');
         const img = qrContainer.querySelector('img');
         
-        if (img && img.src) {
+        let imgUrl = null;
+
+        if (canvas) {
+            imgUrl = canvas.toDataURL("image/png");
+        } else if (img && img.src) {
+            imgUrl = img.src;
+        }
+
+        if (imgUrl) {
             const link = document.createElement('a');
-            link.href = img.src;
+            link.href = imgUrl;
             link.download = 'CosmeticERP_Order.png';
             document.body.appendChild(link);
             link.click();
