@@ -283,13 +283,16 @@
         document.getElementById('qrcode').appendChild(canvas);
 
         try {
+            // التعديل هنا: تحويل البيانات لـ JSON نقي لضمان توافقه مع الكاميرا
+            const jsonString = JSON.stringify(payload);
+            
             new QRious({
                 element: canvas,
-                value: JSON.stringify(payload),
+                value: jsonString,
                 size: 250,
-                level: 'M', // تم تغيير المستوى لـ M عشان يستوعب بيانات أكتر (زي اسم العميل)
+                level: 'L', // تقليل مستوى التصحيح عشان الكود ميبقاش معقد والكاميرا تقرأه أسرع
                 background: '#ffffff',
-                foreground: '#009688'
+                foreground: '#000000' // رجعنا الكود لونه أسود عشان الكاميرا بتقرأه أسرع بكتير من الألوان
             });
             
             setTimeout(() => document.getElementById('download-btn').classList.remove('hidden'), 500);
