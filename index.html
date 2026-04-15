@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نقطة البيع - CosmeticERP</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     
     <style>
@@ -95,9 +94,9 @@
     <p class="subtitle" id="shop-name">CosmeticERP</p>
     
     <div id="setup-section">
-        <p style="text-align: center;">برجاء رفع ملف بيانات المحل (TXT أو JSON) للبدء.</p>
+        <p style="text-align: center;">برجاء رفع ملف بيانات المحل (JSON) للبدء.</p>
         <div class="file-upload-wrapper">
-            <input type="file" id="file-input" accept=".json, .txt" style="padding:0; width: 100%;">
+            <input type="file" id="file-input" accept=".json" style="padding:0; width: 100%;">
         </div>
     </div>
 
@@ -283,18 +282,14 @@
         document.getElementById('qrcode').appendChild(canvas);
 
         try {
-            // التعديل هنا: تحويل البيانات لـ JSON نقي لضمان توافقه مع الكاميرا
-            const jsonString = JSON.stringify(payload);
-            
             new QRious({
                 element: canvas,
-                value: jsonString,
+                value: JSON.stringify(payload),
                 size: 250,
-                level: 'L', // تقليل مستوى التصحيح عشان الكود ميبقاش معقد والكاميرا تقرأه أسرع
+                level: 'L',
                 background: '#ffffff',
-                foreground: '#000000' // رجعنا الكود لونه أسود عشان الكاميرا بتقرأه أسرع بكتير من الألوان
+                foreground: '#000000'
             });
-            
             setTimeout(() => document.getElementById('download-btn').classList.remove('hidden'), 500);
         } catch (e) {
             alert("حجم البيانات كبير جداً، يرجى تقليل الأصناف.");
@@ -306,8 +301,7 @@
         const originalCanvas = qrContainer.querySelector('canvas');
 
         if (!originalCanvas) {
-            alert("برجاء الانتظار حتى يكتمل رسم الكود");
-            return;
+            alert("برجاء الانتظار حتى يكتمل رسم الكود"); return;
         }
 
         let clientName = "عميل نقدي";
