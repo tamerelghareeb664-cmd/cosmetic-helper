@@ -9,81 +9,67 @@
     
     <style>
         :root {
-            --primary: #009688;
-            --primary-dark: #00796b;
-            --bg-color: #f0f4f8;
-            --card-bg: #ffffff;
-            --text-main: #333333;
-            --text-muted: #666666;
-            --danger: #ff4d4f;
-            --border: #e2e8f0;
-            --success: #10b981;
+            --primary: #009688; --primary-dark: #00796b; --bg-color: #f0f4f8; --card-bg: #ffffff;
+            --text-main: #333333; --text-muted: #666666; --danger: #ff4d4f; --border: #e2e8f0; --success: #10b981;
         }
 
-        body { 
-            font-family: 'Cairo', sans-serif; 
-            padding: 20px; 
-            background-color: var(--bg-color); 
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            margin: 0;
-        }
-
-        .card { 
-            background: var(--card-bg); 
-            padding: 25px 20px; 
-            border-radius: 16px; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
-            width: 100%;
-            max-width: 450px; 
-            border-top: 5px solid var(--primary);
-        }
-
+        body { font-family: 'Cairo', sans-serif; padding: 20px; background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; margin: 0; }
+        .card { background: var(--card-bg); padding: 25px 20px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 450px; border-top: 5px solid var(--primary); }
         h2 { margin-top: 0; color: var(--primary); font-weight: 700; text-align: center; margin-bottom: 5px;}
         .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 20px;}
 
-        .total-box {
-            background-color: #ecfdf5;
-            border: 2px dashed var(--success);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            display: none;
+        /* تنسيق القوائم المخصصة الاحترافية */
+        .custom-select-wrapper { position: relative; width: 100%; text-align: right; }
+        .custom-select-trigger { 
+            background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px; 
+            font-size: 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+            transition: all 0.3s;
         }
+        .custom-select-trigger:active { border-color: var(--primary); }
+        .custom-select-trigger::after { content: '▼'; font-size: 10px; color: var(--text-muted); }
         
+        .custom-options { 
+            position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid var(--border); 
+            border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-top: 5px; z-index: 99; 
+            max-height: 250px; overflow-y: auto; display: none; flex-direction: column;
+        }
+        .custom-options.open { display: flex; animation: slideDown 0.2s ease-out; }
+        
+        .search-box { padding: 10px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: #fff; z-index: 2; }
+        .search-box input { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-family: 'Cairo'; outline: none; }
+        .search-box input:focus { border-color: var(--primary); }
+        
+        .custom-option { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f9f9f9; font-size: 14px; transition: 0.2s; }
+        .custom-option:hover { background: #f0fdf4; color: var(--primary); }
+        .custom-option.special { color: var(--primary); font-weight: bold; background: #e6fcf5; }
+        
+        .total-box { background-color: #ecfdf5; border: 2px dashed var(--success); padding: 15px; border-radius: 10px; margin: 20px 0; display: none; }
         .total-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; color: var(--text-muted); }
         .grand-total-row { display: flex; justify-content: space-between; margin-top: 10px; border-top: 1px solid #ccc; padding-top: 10px; font-size: 20px; font-weight: bold; color: var(--success); }
 
-        button { 
-            background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 16px; font-family: 'Cairo', sans-serif; font-weight: 600; margin-top: 10px; width: 100%; transition: 0.2s;
-        }
+        button { background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 16px; font-family: 'Cairo', sans-serif; font-weight: 600; margin-top: 10px; width: 100%; transition: 0.2s; }
         button:active { transform: scale(0.98); }
         .btn-danger { background-color: var(--danger); margin-bottom: 15px; }
         .btn-secondary { background-color: #e2e8f0; color: var(--text-main); }
         .delete-btn { background-color: var(--danger); width: auto; padding: 12px 15px; margin-top: 5px; }
 
-        select, input { 
-            width: 100%; padding: 12px; margin-top: 5px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 14px; box-sizing: border-box; outline: none; transition: 0.2s;
-        }
-        select:focus, input:focus { border-color: var(--primary); }
+        input.normal-input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 14px; box-sizing: border-box; outline: none; transition: 0.2s; }
+        input.normal-input:focus { border-color: var(--primary); }
 
         .form-group { margin-top: 15px; text-align: right; }
         .form-group label { font-size: 14px; font-weight: bold; color: var(--primary-dark); display: block; margin-bottom: 5px;}
 
         #new-client-fields { background: #f8fafc; padding: 15px; border-radius: 8px; margin-top: 10px; border: 1px dashed var(--border); display: none; }
-        
         #qrcode { margin-top: 20px; display: flex; justify-content: center; padding: 15px; background: white; border-radius: 10px; border: 1px solid var(--border); }
         #qrcode canvas { max-width: 100%; height: auto; }
         
         .hidden { display: none !important; }
         .item-row { display: flex; gap: 10px; margin-top: 10px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 8px;}
-        .item-row select { flex: 2; margin-top: 0; }
-        .item-row input { flex: 1; margin-top: 0; text-align: center; }
+        .item-row .custom-select-wrapper { flex: 2; margin-top: 0; }
+        .item-row input.item-qty { flex: 1; margin-top: 0; text-align: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Cairo'; outline:none; }
         
         .fade-in { animation: fadeIn 0.4s ease-in; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -94,37 +80,52 @@
     <p class="subtitle" id="shop-name">CosmeticERP</p>
     
     <div id="setup-section">
-        <p style="text-align: center;">برجاء رفع ملف بيانات المحل (JSON) للبدء.</p>
-        <div class="file-upload-wrapper">
-            <input type="file" id="file-input" accept=".json" style="padding:0; width: 100%;">
+        <p style="text-align: center;">برجاء رفع ملف بيانات المحل (TXT أو JSON) للبدء.</p>
+        <div style="position: relative; overflow: hidden; display: inline-block; width: 100%; margin-top: 15px;">
+            <button style="background-color: var(--primary);">اختيار ملف البيانات</button>
+            <input type="file" id="file-input" accept=".json, .txt" style="font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer;">
         </div>
     </div>
 
     <div id="app-section" class="hidden">
         <button onclick="clearData()" class="btn-danger">مسح وتحديث البيانات (ملف جديد)</button>
         
+        <!-- العميل -->
         <div class="form-group">
             <label>1. بيانات العميل</label>
-            <select id="client-select" onchange="handleClientChange()">
-                <option value="">عميل نقدي (بدون اسم)</option>
-                <option value="NEW" style="font-weight: bold; color: var(--primary);">+ إضافة عميل جديد</option>
-            </select>
+            <!-- القايمة المخصصة للعميل -->
+            <div class="custom-select-wrapper" id="client-wrapper">
+                <input type="hidden" id="client-value" value="">
+                <div class="custom-select-trigger" onclick="toggleDropdown('client-options')">
+                    <span id="client-text">عميل نقدي (بدون اسم)</span>
+                </div>
+                <div class="custom-options" id="client-options">
+                    <div class="search-box">
+                        <input type="text" placeholder="ابحث عن عميل..." onkeyup="filterOptions(this, 'client-list')">
+                    </div>
+                    <div id="client-list">
+                        <!-- سيتم التعبئة من الجافاسكريبت -->
+                    </div>
+                </div>
+            </div>
             
             <div id="new-client-fields">
-                <input type="text" id="new-client-name" placeholder="اسم العميل الجديد *" required>
-                <input type="tel" id="new-client-phone" placeholder="رقم التليفون (اختياري)">
+                <input type="text" id="new-client-name" class="normal-input" placeholder="اسم العميل الجديد *" required>
+                <input type="tel" id="new-client-phone" class="normal-input" placeholder="رقم التليفون (اختياري)">
             </div>
         </div>
 
+        <!-- المنتجات -->
         <div class="form-group">
             <label>2. المنتجات المطلوبة</label>
             <div id="items-container"></div>
             <button onclick="addNewRow()" class="btn-secondary">+ إضافة صنف آخر</button>
         </div>
 
+        <!-- الخصم والإجمالي -->
         <div class="form-group">
             <label>3. الخصم (بالجنيه)</label>
-            <input type="number" id="discount-input" placeholder="0" min="0" oninput="calculateTotal()">
+            <input type="number" id="discount-input" class="normal-input" placeholder="0" min="0" oninput="calculateTotal()">
         </div>
         
         <div id="total-section" class="total-box">
@@ -152,6 +153,13 @@
             clients = data.clients || [];
             startApp();
         }
+        
+        // إغلاق القوائم عند الضغط في أي مكان فارغ
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.custom-select-wrapper')) {
+                document.querySelectorAll('.custom-options').forEach(opt => opt.classList.remove('open'));
+            }
+        });
     };
 
     document.getElementById('file-input').addEventListener('change', function(e) {
@@ -175,23 +183,99 @@
     function startApp() {
         document.getElementById('setup-section').classList.add('hidden');
         document.getElementById('app-section').classList.remove('hidden');
-        
-        const clientSelect = document.getElementById('client-select');
-        clientSelect.innerHTML = '<option value="">عميل نقدي (بدون اسم)</option><option value="NEW" style="font-weight: bold; color: #009688;">+ إضافة عميل جديد</option>';
-        
-        clients.forEach(c => {
-            let option = document.createElement('option');
-            option.value = c.id;
-            option.text = c.name;
-            clientSelect.add(option);
-        });
+        buildClientDropdown();
         addNewRow();
     }
 
-    function handleClientChange() {
-        const select = document.getElementById('client-select');
+    // --- نظام القوائم المخصصة ---
+    function toggleDropdown(id) {
+        document.querySelectorAll('.custom-options').forEach(opt => {
+            if(opt.id !== id) opt.classList.remove('open');
+        });
+        document.getElementById(id).classList.toggle('open');
+    }
+
+    function filterOptions(input, listId) {
+        const filter = input.value.toUpperCase();
+        const options = document.getElementById(listId).getElementsByClassName('custom-option');
+        for (let i = 0; i < options.length; i++) {
+            const txtValue = options[i].textContent || options[i].innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                options[i].style.display = "";
+            } else {
+                options[i].style.display = "none";
+            }
+        }
+    }
+
+    function selectClient(id, name) {
+        document.getElementById('client-value').value = id;
+        document.getElementById('client-text').innerText = name;
+        document.getElementById('client-options').classList.remove('open');
+        
         const newFields = document.getElementById('new-client-fields');
-        newFields.style.display = select.value === 'NEW' ? 'block' : 'none';
+        newFields.style.display = id === 'NEW' ? 'block' : 'none';
+    }
+
+    function selectProduct(rowId, productId, productName, price) {
+        document.getElementById(`prod-val-${rowId}`).value = productId;
+        document.getElementById(`prod-text-${rowId}`).innerText = productName + (price ? ` (${price} ج)` : '');
+        document.getElementById(`prod-options-${rowId}`).classList.remove('open');
+        calculateTotal();
+    }
+
+    function buildClientDropdown() {
+        const list = document.getElementById('client-list');
+        let html = `<div class="custom-option" onclick="selectClient('', 'عميل نقدي (بدون اسم)')">عميل نقدي (بدون اسم)</div>`;
+        html += `<div class="custom-option special" onclick="selectClient('NEW', '+ إضافة عميل جديد')">+ إضافة عميل جديد</div>`;
+        
+        clients.forEach(c => {
+            html += `<div class="custom-option" onclick="selectClient('${c.id}', '${c.name.replace(/'/g, "\\'")}')">${c.name}</div>`;
+        });
+        list.innerHTML = html;
+    }
+    // ----------------------------
+
+    let rowCounter = 0;
+    function addNewRow() {
+        rowCounter++;
+        const container = document.getElementById('items-container');
+        const row = document.createElement('div');
+        row.className = 'item-row fade-in';
+        row.id = `row-${rowCounter}`;
+        
+        let optionsHtml = '';
+        catalog.forEach(item => {
+            const priceText = item.price ? ` (${item.price} ج)` : '';
+            const safeName = item.name.replace(/'/g, "\\'");
+            optionsHtml += `<div class="custom-option" onclick="selectProduct(${rowCounter}, '${item.id}', '${safeName}', '${item.price || ''}')">${item.name}${priceText}</div>`;
+        });
+
+        row.innerHTML = `
+            <div class="custom-select-wrapper">
+                <input type="hidden" class="item-val" id="prod-val-${rowCounter}" value="">
+                <div class="custom-select-trigger" onclick="toggleDropdown('prod-options-${rowCounter}')">
+                    <span id="prod-text-${rowCounter}">اختر الصنف...</span>
+                </div>
+                <div class="custom-options" id="prod-options-${rowCounter}">
+                    <div class="search-box">
+                        <input type="text" placeholder="ابحث عن منتج..." onkeyup="filterOptions(this, 'prod-list-${rowCounter}')">
+                    </div>
+                    <div id="prod-list-${rowCounter}">
+                        ${optionsHtml}
+                    </div>
+                </div>
+            </div>
+            <input type="number" class="item-qty" placeholder="الكمية" min="1" value="1" oninput="calculateTotal()">
+            <button class="delete-btn" onclick="removeRow(this)">X</button>
+        `;
+        container.appendChild(row);
+        calculateTotal();
+    }
+
+    function removeRow(btn) {
+        btn.parentElement.remove();
+        calculateTotal();
     }
 
     function calculateTotal() {
@@ -199,10 +283,10 @@
         let subTotal = 0;
         
         rows.forEach(row => {
-            const select = row.querySelector('.item-select');
+            const valInput = row.querySelector('.item-val');
             const qtyInput = row.querySelector('.item-qty');
-            if (select.value && qtyInput.value > 0) {
-                const product = catalog.find(p => p.id === select.value);
+            if (valInput.value && qtyInput.value > 0) {
+                const product = catalog.find(p => p.id === valInput.value);
                 if (product && product.price) subTotal += (product.price * qtyInput.value);
             }
         });
@@ -222,37 +306,12 @@
         }
     }
 
-    function addNewRow() {
-        const container = document.getElementById('items-container');
-        const row = document.createElement('div');
-        row.className = 'item-row fade-in';
-        
-        let selectHtml = `<select class="item-select" onchange="calculateTotal()"><option value="">اختر الصنف...</option>`;
-        catalog.forEach(item => {
-            const priceText = item.price ? ` (${item.price} ج)` : '';
-            selectHtml += `<option value="${item.id}">${item.name}${priceText}</option>`;
-        });
-        selectHtml += `</select>`;
-        
-        row.innerHTML = selectHtml + `
-            <input type="number" class="item-qty" placeholder="الكمية" min="1" value="1" oninput="calculateTotal()">
-            <button class="delete-btn" onclick="removeRow(this)">X</button>
-        `;
-        container.appendChild(row);
-        calculateTotal();
-    }
-
-    function removeRow(btn) {
-        btn.parentElement.remove();
-        calculateTotal();
-    }
-
     function generateQR() {
         const rows = document.querySelectorAll('.item-row');
         let selectedItems = [];
         
         rows.forEach(row => {
-            const id = row.querySelector('.item-select').value;
+            const id = row.querySelector('.item-val').value;
             const qty = parseFloat(row.querySelector('.item-qty').value);
             if (id && qty > 0) selectedItems.push({ id: id, qty: qty });
         });
@@ -261,23 +320,22 @@
             alert("برجاء اختيار صنف واحد على الأقل"); return;
         }
 
-        const clientSelect = document.getElementById('client-select').value;
+        const clientVal = document.getElementById('client-value').value;
         let payload = {
             type: "SALE",
             discount: parseFloat(document.getElementById('discount-input').value) || 0,
             items: selectedItems
         };
 
-        if (clientSelect === 'NEW') {
+        if (clientVal === 'NEW') {
             const newName = document.getElementById('new-client-name').value.trim();
             if (!newName) { alert("برجاء كتابة اسم العميل الجديد"); return; }
             payload.newClient = { name: newName, phone: document.getElementById('new-client-phone').value.trim() };
-        } else if (clientSelect !== '') {
-            payload.clientId = clientSelect;
+        } else if (clientVal !== '') {
+            payload.clientId = clientVal;
         }
 
         document.getElementById('qrcode').innerHTML = "";
-        
         const canvas = document.createElement('canvas');
         document.getElementById('qrcode').appendChild(canvas);
 
@@ -300,17 +358,12 @@
         const qrContainer = document.getElementById('qrcode');
         const originalCanvas = qrContainer.querySelector('canvas');
 
-        if (!originalCanvas) {
-            alert("برجاء الانتظار حتى يكتمل رسم الكود"); return;
-        }
+        if (!originalCanvas) { alert("برجاء الانتظار حتى يكتمل رسم الكود"); return; }
 
-        let clientName = "عميل نقدي";
-        const clientSelect = document.getElementById('client-select');
-        if (clientSelect.value === 'NEW') {
+        let clientName = document.getElementById('client-text').innerText;
+        if (document.getElementById('client-value').value === 'NEW') {
             const newName = document.getElementById('new-client-name').value.trim();
             if (newName) clientName = newName;
-        } else if (clientSelect.value !== '') {
-            clientName = clientSelect.options[clientSelect.selectedIndex].text;
         }
 
         const grandTotalText = document.getElementById('grand-total').innerText;
@@ -318,9 +371,7 @@
         const exportCanvas = document.createElement('canvas');
         const ctx = exportCanvas.getContext('2d');
 
-        const qrSize = 250;
-        const padding = 20;
-        const textHeight = 80;
+        const qrSize = 250; const padding = 20; const textHeight = 80;
 
         exportCanvas.width = qrSize + (padding * 2);
         exportCanvas.height = qrSize + textHeight + (padding * 2);
@@ -330,7 +381,7 @@
 
         ctx.textAlign = "center";
         ctx.fillStyle = "#009688";
-        ctx.font = "bold 22px Arial";
+        ctx.font = "bold 22px Cairo, Arial";
         ctx.fillText(clientName, exportCanvas.width / 2, padding + 25);
         
         ctx.fillStyle = "#10b981";
