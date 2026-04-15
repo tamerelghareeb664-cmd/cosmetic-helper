@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المساعد الذكي - CosmeticERP</title>
+    <title>نقطة البيع - CosmeticERP</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
@@ -18,6 +17,7 @@
             --text-muted: #666666;
             --danger: #ff4d4f;
             --border: #e2e8f0;
+            --success: #10b981;
         }
 
         body { 
@@ -27,146 +27,125 @@
             color: var(--text-main);
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 90vh;
+            align-items: flex-start;
+            min-height: 100vh;
             margin: 0;
         }
 
         .card { 
             background: var(--card-bg); 
-            padding: 30px 20px; 
+            padding: 25px 20px; 
             border-radius: 16px; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
             width: 100%;
-            max-width: 400px; 
+            max-width: 450px; 
             border-top: 5px solid var(--primary);
-            text-align: center;
         }
 
-        h2 { margin-top: 0; color: var(--primary); font-weight: 700; }
-        h3 { color: var(--text-main); font-weight: 600; }
-        p { color: var(--text-muted); font-size: 14px; line-height: 1.6; }
+        h2 { margin-top: 0; color: var(--primary); font-weight: 700; text-align: center; margin-bottom: 5px;}
+        .subtitle { text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 20px;}
+
+        .total-box {
+            background-color: #ecfdf5;
+            border: 2px dashed var(--success);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .total-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 15px; color: var(--text-muted); }
+        .grand-total-row { display: flex; justify-content: space-between; margin-top: 10px; border-top: 1px solid #ccc; padding-top: 10px; font-size: 20px; font-weight: bold; color: var(--success); }
 
         button { 
-            background-color: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 12px 20px; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-size: 16px; 
-            font-family: 'Cairo', sans-serif;
-            font-weight: 600;
-            margin-top: 15px; 
-            width: 100%; 
-            transition: background-color 0.3s ease, transform 0.1s ease;
+            background-color: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 16px; font-family: 'Cairo', sans-serif; font-weight: 600; margin-top: 10px; width: 100%; transition: 0.2s;
         }
-
         button:active { transform: scale(0.98); }
-        button:hover { background-color: var(--primary-dark); }
-        
-        .btn-danger { background-color: var(--danger); margin-bottom: 20px; }
-        .btn-danger:hover { background-color: #d9363e; }
-        
+        .btn-danger { background-color: var(--danger); margin-bottom: 15px; }
         .btn-secondary { background-color: #e2e8f0; color: var(--text-main); }
-        .btn-secondary:hover { background-color: #cbd5e1; }
+        .delete-btn { background-color: var(--danger); width: auto; padding: 12px 15px; margin-top: 5px; }
 
         select, input { 
-            width: 100%; 
-            padding: 12px; 
-            margin-top: 10px; 
-            border: 1px solid var(--border); 
-            border-radius: 8px; 
-            font-family: 'Cairo', sans-serif;
-            font-size: 14px;
-            box-sizing: border-box;
-            outline: none;
-            transition: border-color 0.3s ease;
+            width: 100%; padding: 12px; margin-top: 5px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 14px; box-sizing: border-box; outline: none; transition: 0.2s;
         }
-
         select:focus, input:focus { border-color: var(--primary); }
 
-        .file-upload-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-            width: 100%;
-            margin-top: 15px;
-        }
+        .form-group { margin-top: 15px; text-align: right; }
+        .form-group label { font-size: 14px; font-weight: bold; color: var(--primary-dark); display: block; margin-bottom: 5px;}
 
-        .file-upload-wrapper input[type=file] {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        .btn-upload { background-color: var(--primary); }
-
-        #qrcode { 
-            margin-top: 25px; 
-            display: flex; 
-            justify-content: center; 
-            padding: 15px;
-            background: white;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-        }
-
-        .hidden { display: none; }
+        #new-client-fields { background: #f8fafc; padding: 15px; border-radius: 8px; margin-top: 10px; border: 1px dashed var(--border); display: none; }
+        #qrcode { margin-top: 20px; display: flex; justify-content: center; padding: 15px; background: white; border-radius: 10px; border: 1px solid var(--border); }
         
-        .item-row { 
-            display: flex; 
-            gap: 10px; 
-            margin-top: 15px; 
-            align-items: center;
-        }
+        .hidden { display: none !important; }
+        .item-row { display: flex; gap: 10px; margin-top: 10px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 8px;}
         .item-row select { flex: 2; margin-top: 0; }
         .item-row input { flex: 1; margin-top: 0; text-align: center; }
-
-        .fade-in { animation: fadeIn 0.5s ease-in; }
+        
+        .fade-in { animation: fadeIn 0.4s ease-in; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="card fade-in">
-    <h2>Cosmetic Helper</h2>
+    <h2>نقاط البيع السريعة</h2>
+    <p class="subtitle" id="shop-name">CosmeticERP</p>
     
     <div id="setup-section">
-        <p>أهلاً بك! لتهيئة المساعد، برجاء رفع ملف قاعدة البيانات (JSON) الذي أرسله لك المدير.</p>
-        <div class="file-upload-wrapper">
-            <button class="btn-upload">اختيار ملف البيانات</button>
-            <input type="file" id="file-input" accept=".json">
-        </div>
+        <p style="text-align: center;">برجاء رفع ملف بيانات المحل (JSON) للبدء.</p>
+        <input type="file" id="file-input" accept=".json" style="padding:0;">
     </div>
 
     <div id="app-section" class="hidden">
-        <h3 id="mode-title">تجهيز طلب</h3>
-        <button onclick="clearData()" class="btn-danger">تحديث / رفع ملف بيانات جديد</button>
+        <button onclick="clearData()" class="btn-danger">مسح وتحديث البيانات (ملف جديد)</button>
         
-        <div id="items-container">
+        <div class="form-group">
+            <label>1. بيانات العميل</label>
+            <select id="client-select" onchange="handleClientChange()">
+                <option value="">عميل نقدي (بدون اسم)</option>
+                <option value="NEW" style="font-weight: bold; color: var(--primary);">+ إضافة عميل جديد</option>
+            </select>
+            
+            <div id="new-client-fields">
+                <input type="text" id="new-client-name" placeholder="اسم العميل الجديد *" required>
+                <input type="tel" id="new-client-phone" placeholder="رقم التليفون (اختياري)">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>2. المنتجات المطلوبة</label>
+            <div id="items-container"></div>
+            <button onclick="addNewRow()" class="btn-secondary">+ إضافة صنف آخر</button>
+        </div>
+
+        <div class="form-group">
+            <label>3. الخصم (بالجنيه)</label>
+            <input type="number" id="discount-input" placeholder="0" min="0" oninput="calculateTotal()">
         </div>
         
-        <button onclick="addNewRow()" class="btn-secondary">+ إضافة صنف آخر</button>
-        <button onclick="generateQR()">توليد كود الطلب (QR)</button>
+        <div id="total-section" class="total-box">
+            <div class="total-row"><span>المجموع:</span> <span id="sub-total">0</span></div>
+            <div class="total-row"><span>الخصم:</span> <span id="discount-amount">0</span></div>
+            <div class="grand-total-row"><span>الصافي المطلوب:</span> <span id="grand-total">0 EGP</span></div>
+        </div>
+
+        <button onclick="generateQR()" style="margin-top: 20px; font-size: 18px;">تأكيد وتوليد الفاتورة (QR)</button>
         
         <div id="qrcode"></div>
-        
-        <button id="download-btn" onclick="downloadQR()" class="btn-secondary hidden" style="margin-top: 15px; background-color: #cbd5e1;">حفظ الكود كصورة</button>
+        <button id="download-btn" onclick="downloadQR()" class="btn-secondary hidden" style="margin-top: 15px; background-color: #cbd5e1;">حفظ الفاتورة كصورة</button>
     </div>
 </div>
 
 <script>
     let catalog = [];
-    let appMode = 'SALE'; 
+    let clients = [];
 
     window.onload = function() {
         const savedData = localStorage.getItem('helperCatalog');
         if (savedData) {
-            catalog = JSON.parse(savedData);
+            const data = JSON.parse(savedData);
+            catalog = data.catalog || [];
+            clients = data.clients || [];
             startApp();
         }
     };
@@ -179,15 +158,12 @@
             try {
                 const json = JSON.parse(e.target.result);
                 if(json.catalog) {
+                    localStorage.setItem('helperCatalog', JSON.stringify(json));
                     catalog = json.catalog;
-                    localStorage.setItem('helperCatalog', JSON.stringify(catalog));
+                    clients = json.clients || [];
                     startApp();
-                } else {
-                    alert("ملف غير صالح");
-                }
-            } catch (err) {
-                alert("حدث خطأ في قراءة الملف");
-            }
+                } else { alert("ملف غير صالح"); }
+            } catch (err) { alert("حدث خطأ في قراءة الملف"); }
         };
         reader.readAsText(file);
     });
@@ -196,11 +172,50 @@
         document.getElementById('setup-section').classList.add('hidden');
         document.getElementById('app-section').classList.remove('hidden');
         
-        if(catalog.length > 0) {
-            appMode = catalog[0].type;
-            document.getElementById('mode-title').innerText = appMode === 'SALE' ? "تجهيز فاتورة مبيعات" : "جرد مخزن / إعادة تخزين";
-        }
+        const clientSelect = document.getElementById('client-select');
+        clientSelect.innerHTML = '<option value="">عميل نقدي (بدون اسم)</option><option value="NEW" style="font-weight: bold; color: #009688;">+ إضافة عميل جديد</option>';
+        
+        clients.forEach(c => {
+            let option = document.createElement('option');
+            option.value = c.id;
+            option.text = c.name;
+            clientSelect.add(option);
+        });
         addNewRow();
+    }
+
+    function handleClientChange() {
+        const select = document.getElementById('client-select');
+        const newFields = document.getElementById('new-client-fields');
+        newFields.style.display = select.value === 'NEW' ? 'block' : 'none';
+    }
+
+    function calculateTotal() {
+        const rows = document.querySelectorAll('.item-row');
+        let subTotal = 0;
+        
+        rows.forEach(row => {
+            const select = row.querySelector('.item-select');
+            const qtyInput = row.querySelector('.item-qty');
+            if (select.value && qtyInput.value > 0) {
+                const product = catalog.find(p => p.id === select.value);
+                if (product && product.price) subTotal += (product.price * qtyInput.value);
+            }
+        });
+
+        let discount = parseFloat(document.getElementById('discount-input').value) || 0;
+        let grandTotal = subTotal - discount;
+        if (grandTotal < 0) grandTotal = 0;
+
+        const totalSection = document.getElementById('total-section');
+        if (subTotal > 0) {
+            totalSection.style.display = 'block';
+            document.getElementById('sub-total').innerText = subTotal.toLocaleString();
+            document.getElementById('discount-amount').innerText = discount.toLocaleString();
+            document.getElementById('grand-total').innerText = grandTotal.toLocaleString() + ' EGP';
+        } else {
+            totalSection.style.display = 'none';
+        }
     }
 
     function addNewRow() {
@@ -208,14 +223,24 @@
         const row = document.createElement('div');
         row.className = 'item-row fade-in';
         
-        let selectHtml = `<select class="item-select"><option value="">اختر الصنف...</option>`;
+        let selectHtml = `<select class="item-select" onchange="calculateTotal()"><option value="">اختر الصنف...</option>`;
         catalog.forEach(item => {
-            selectHtml += `<option value="${item.id}">${item.name}</option>`;
+            const priceText = item.price ? ` (${item.price} ج)` : '';
+            selectHtml += `<option value="${item.id}">${item.name}${priceText}</option>`;
         });
         selectHtml += `</select>`;
         
-        row.innerHTML = selectHtml + `<input type="number" class="item-qty" placeholder="الكمية" min="1">`;
+        row.innerHTML = selectHtml + `
+            <input type="number" class="item-qty" placeholder="الكمية" min="1" value="1" oninput="calculateTotal()">
+            <button class="delete-btn" onclick="removeRow(this)">X</button>
+        `;
         container.appendChild(row);
+        calculateTotal();
+    }
+
+    function removeRow(btn) {
+        btn.parentElement.remove();
+        calculateTotal();
     }
 
     function generateQR() {
@@ -225,63 +250,116 @@
         rows.forEach(row => {
             const id = row.querySelector('.item-select').value;
             const qty = parseFloat(row.querySelector('.item-qty').value);
-            if (id && qty > 0) {
-                selectedItems.push({ id: id, qty: qty });
-            }
+            if (id && qty > 0) selectedItems.push({ id: id, qty: qty });
         });
 
         if (selectedItems.length === 0) {
-            alert("برجاء اختيار صنف وكمية صحيحة");
-            return;
+            alert("برجاء اختيار صنف واحد على الأقل"); return;
         }
 
-        const payload = {
-            type: appMode,
+        const clientSelect = document.getElementById('client-select').value;
+        let payload = {
+            type: "SALE",
+            discount: parseFloat(document.getElementById('discount-input').value) || 0,
             items: selectedItems
         };
 
+        if (clientSelect === 'NEW') {
+            const newName = document.getElementById('new-client-name').value.trim();
+            if (!newName) { alert("برجاء كتابة اسم العميل الجديد"); return; }
+            payload.newClient = { name: newName, phone: document.getElementById('new-client-phone').value.trim() };
+        } else if (clientSelect !== '') {
+            payload.clientId = clientSelect;
+        }
+
         document.getElementById('qrcode').innerHTML = "";
-        
         new QRCode(document.getElementById('qrcode'), {
             text: JSON.stringify(payload),
-            width: 200,
-            height: 200,
-            colorDark : "#009688",
-            colorLight : "#ffffff"
+            width: 220, height: 220,
+            colorDark : "#009688", colorLight : "#ffffff"
         });
 
-        setTimeout(() => {
-            document.getElementById('download-btn').classList.remove('hidden');
-        }, 500);
+        setTimeout(() => document.getElementById('download-btn').classList.remove('hidden'), 500);
     }
 
+    // دالة التحميل الجديدة (بترسم الإجمالي والاسم فوق الـ QR)
     function downloadQR() {
         const qrContainer = document.getElementById('qrcode');
-        const canvas = qrContainer.querySelector('canvas');
-        const img = qrContainer.querySelector('img');
-        
-        let imgUrl = null;
+        const originalCanvas = qrContainer.querySelector('canvas');
+        const originalImg = qrContainer.querySelector('img');
 
-        if (canvas) {
-            imgUrl = canvas.toDataURL("image/png");
-        } else if (img && img.src) {
-            imgUrl = img.src;
-        }
+        let qrSource = originalCanvas || originalImg;
 
-        if (imgUrl) {
-            const link = document.createElement('a');
-            link.href = imgUrl;
-            link.download = 'CosmeticERP_Order.png';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } else {
+        if (!qrSource) {
             alert("برجاء الانتظار حتى يكتمل رسم الكود");
+            return;
         }
+
+        // استخراج اسم العميل
+        let clientName = "عميل نقدي";
+        const clientSelect = document.getElementById('client-select');
+        if (clientSelect.value === 'NEW') {
+            const newName = document.getElementById('new-client-name').value.trim();
+            if (newName) clientName = newName;
+        } else if (clientSelect.value !== '') {
+            clientName = clientSelect.options[clientSelect.selectedIndex].text;
+        }
+
+        // استخراج الإجمالي
+        const grandTotalText = document.getElementById('grand-total').innerText;
+
+        // إنشاء لوحة رسم جديدة
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        const qrSize = 220;
+        const padding = 20;
+        const textHeight = 80;
+
+        canvas.width = qrSize + (padding * 2);
+        canvas.height = qrSize + textHeight + (padding * 2);
+
+        // خلفية بيضاء
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // رسم النصوص
+        ctx.textAlign = "center";
+        
+        ctx.fillStyle = "#009688";
+        ctx.font = "bold 22px Arial";
+        ctx.fillText(clientName, canvas.width / 2, padding + 25);
+        
+        ctx.fillStyle = "#10b981";
+        ctx.font = "bold 24px Arial";
+        ctx.fillText(grandTotalText, canvas.width / 2, padding + 60);
+
+        // رسم الـ QR Code
+        if (originalCanvas) {
+            ctx.drawImage(originalCanvas, padding, padding + textHeight, qrSize, qrSize);
+            triggerDownload(canvas.toDataURL("image/png"));
+        } else if (originalImg && originalImg.src) {
+            const img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.onload = function() {
+                ctx.drawImage(img, padding, padding + textHeight, qrSize, qrSize);
+                triggerDownload(canvas.toDataURL("image/png"));
+            };
+            img.src = originalImg.src;
+        }
+    }
+
+    function triggerDownload(imgUrl) {
+        const link = document.createElement('a');
+        link.href = imgUrl;
+        link.download = 'CosmeticERP_Order.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     function clearData() {
-        if(confirm("هل أنت متأكد من مسح البيانات لرفع ملف جديد؟")) {
+        if(confirm("مسح البيانات لرفع ملف جديد؟")) {
             localStorage.removeItem('helperCatalog');
             location.reload();
         }
