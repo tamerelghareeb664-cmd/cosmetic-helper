@@ -92,8 +92,11 @@
     <p class="subtitle" id="shop-name">CosmeticERP</p>
     
     <div id="setup-section">
-        <p style="text-align: center;">برجاء رفع ملف بيانات المحل (JSON) للبدء.</p>
-        <input type="file" id="file-input" accept=".json" style="padding:0;">
+        <p style="text-align: center;">برجاء رفع ملف بيانات المحل (TXT أو JSON) للبدء.</p>
+        <div class="file-upload-wrapper">
+            <!-- التعديل هنا: يقبل txt و json -->
+            <input type="file" id="file-input" accept=".json, .txt" style="padding:0;">
+        </div>
     </div>
 
     <div id="app-section" class="hidden">
@@ -282,7 +285,7 @@
         setTimeout(() => document.getElementById('download-btn').classList.remove('hidden'), 500);
     }
 
-    // دالة التحميل الجديدة (بترسم الإجمالي والاسم فوق الـ QR)
+    // دالة التحميل الجديدة اللي بترسم الإجمالي والاسم فوق الـ QR
     function downloadQR() {
         const qrContainer = document.getElementById('qrcode');
         const originalCanvas = qrContainer.querySelector('canvas');
