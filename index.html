@@ -43,48 +43,16 @@
         .custom-option:hover { background: #f0fdf4; color: var(--primary); }
         .custom-option.special { color: var(--primary); font-weight: bold; background: #e6fcf5; }
         
-        /* تصميم صف المنتجات الجديد (رأسي) */
+        /* تصميم صف المنتجات (رأسي) */
         .item-row { 
-            display: flex; 
-            flex-direction: column; /* التعديل هنا: العناصر تحت بعض */
-            gap: 10px; 
-            margin-top: 15px; 
-            background: #f8fafc; 
-            padding: 15px; 
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            position: relative;
+            display: flex; flex-direction: column; gap: 10px; margin-top: 15px; background: #f8fafc; 
+            padding: 15px; border-radius: 12px; border: 1px solid var(--border); position: relative;
         }
         .item-row .custom-select-wrapper { width: 100%; }
         
-        /* صف الكمية والمسح */
-        .qty-action-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            gap: 10px;
-        }
-        .qty-action-row input.item-qty { 
-            flex: 3; 
-            margin-top: 0; 
-            text-align: center; 
-            padding: 12px; 
-            border: 1px solid var(--border); 
-            border-radius: 8px; 
-            font-family: 'Cairo'; 
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .qty-action-row .delete-btn { 
-            flex: 1; 
-            background: #fee2e2; 
-            color: var(--danger); 
-            padding: 12px; 
-            margin: 0; 
-            border-radius: 8px; 
-            font-weight: bold;
-        }
+        .qty-action-row { display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; }
+        .qty-action-row input.item-qty { flex: 3; margin-top: 0; text-align: center; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Cairo'; font-size: 16px; font-weight: bold; }
+        .qty-action-row .delete-btn { flex: 1; background: #fee2e2; color: var(--danger); padding: 12px; margin: 0; border-radius: 8px; font-weight: bold; border: none; cursor: pointer;}
         .qty-action-row .delete-btn:hover { background: var(--danger); color: white; }
 
         .total-box { background-color: #ecfdf5; border: 2px dashed var(--success); padding: 15px; border-radius: 10px; margin: 20px 0; display: none; }
@@ -119,10 +87,10 @@
     <p class="subtitle" id="shop-name">CosmeticERP</p>
     
     <div id="setup-section">
-        <p style="text-align: center;">برجاء رفع ملف بيانات المحل (TXT أو JSON) للبدء.</p>
+        <p style="text-align: center;">برجاء رفع ملف بيانات المحل (JSON) للبدء.</p>
         <div style="position: relative; overflow: hidden; display: inline-block; width: 100%; margin-top: 15px;">
             <button style="background-color: var(--primary);">اختيار ملف البيانات</button>
-            <input type="file" id="file-input" accept=".json, .txt" style="font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer;">
+            <input type="file" id="file-input" accept=".json" style="font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer;">
         </div>
     </div>
 
@@ -376,9 +344,12 @@
         document.getElementById('qrcode').appendChild(canvas);
 
         try {
+            // التعديل السحري هنا: تحويل الـ JSON لنص آمن جداً ومضغوط
+            const safePayload = encodeURIComponent(JSON.stringify(payload));
+            
             new QRious({
                 element: canvas,
-                value: JSON.stringify(payload),
+                value: safePayload,
                 size: 250,
                 level: 'L',
                 background: '#ffffff',
