@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نقطة البيع - CosmeticERP</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     
     <style>
         :root {
@@ -74,7 +75,9 @@
         .form-group label { font-size: 14px; font-weight: bold; color: var(--primary-dark); display: block; margin-bottom: 5px;}
 
         #new-client-fields { background: #f8fafc; padding: 15px; border-radius: 8px; margin-top: 10px; border: 1px dashed var(--border); display: none; }
+        
         #qrcode { margin-top: 20px; display: flex; justify-content: center; padding: 15px; background: white; border-radius: 10px; border: 1px solid var(--border); }
+        #qrcode canvas { max-width: 100%; height: auto; }
         
         .hidden { display: none !important; }
         .item-row { display: flex; gap: 10px; margin-top: 10px; align-items: center; background: #f8fafc; padding: 10px; border-radius: 8px;}
@@ -94,8 +97,7 @@
     <div id="setup-section">
         <p style="text-align: center;">برجاء رفع ملف بيانات المحل (TXT أو JSON) للبدء.</p>
         <div class="file-upload-wrapper">
-            <!-- التعديل هنا: يقبل txt و json -->
-            <input type="file" id="file-input" accept=".json, .txt" style="padding:0;">
+            <input type="file" id="file-input" accept=".json, .txt" style="padding:0; width: 100%;">
         </div>
     </div>
 
@@ -276,29 +278,35 @@
         }
 
         document.getElementById('qrcode').innerHTML = "";
-        new QRCode(document.getElementById('qrcode'), {
-            text: JSON.stringify(payload),
-            width: 220, height: 220,
-            colorDark : "#009688", colorLight : "#ffffff"
-        });
+        
+        const canvas = document.createElement('canvas');
+        document.getElementById('qrcode').appendChild(canvas);
 
-        setTimeout(() => document.getElementById('download-btn').classList.remove('hidden'), 500);
+        try {
+            new QRious({
+                element: canvas,
+                value: JSON.stringify(payload),
+                size: 250,
+                level: 'M', // تم تغيير المستوى لـ M عشان يستوعب بيانات أكتر (زي اسم العميل)
+                background: '#ffffff',
+                foreground: '#009688'
+            });
+            
+            setTimeout(() => document.getElementById('download-btn').classList.remove('hidden'), 500);
+        } catch (e) {
+            alert("حجم البيانات كبير جداً، يرجى تقليل الأصناف.");
+        }
     }
 
-    // دالة التحميل الجديدة اللي بترسم الإجمالي والاسم فوق الـ QR
     function downloadQR() {
         const qrContainer = document.getElementById('qrcode');
         const originalCanvas = qrContainer.querySelector('canvas');
-        const originalImg = qrContainer.querySelector('img');
 
-        let qrSource = originalCanvas || originalImg;
-
-        if (!qrSource) {
+        if (!originalCanvas) {
             alert("برجاء الانتظار حتى يكتمل رسم الكود");
             return;
         }
 
-        // استخراج اسم العميل
         let clientName = "عميل نقدي";
         const clientSelect = document.getElementById('client-select');
         if (clientSelect.value === 'NEW') {
@@ -308,53 +316,34 @@
             clientName = clientSelect.options[clientSelect.selectedIndex].text;
         }
 
-        // استخراج الإجمالي
         const grandTotalText = document.getElementById('grand-total').innerText;
 
-        // إنشاء لوحة رسم جديدة
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
+        const exportCanvas = document.createElement('canvas');
+        const ctx = exportCanvas.getContext('2d');
 
-        const qrSize = 220;
+        const qrSize = 250;
         const padding = 20;
         const textHeight = 80;
 
-        canvas.width = qrSize + (padding * 2);
-        canvas.height = qrSize + textHeight + (padding * 2);
+        exportCanvas.width = qrSize + (padding * 2);
+        exportCanvas.height = qrSize + textHeight + (padding * 2);
 
-        // خلفية بيضاء
         ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
 
-        // رسم النصوص
         ctx.textAlign = "center";
-        
         ctx.fillStyle = "#009688";
         ctx.font = "bold 22px Arial";
-        ctx.fillText(clientName, canvas.width / 2, padding + 25);
+        ctx.fillText(clientName, exportCanvas.width / 2, padding + 25);
         
         ctx.fillStyle = "#10b981";
         ctx.font = "bold 24px Arial";
-        ctx.fillText(grandTotalText, canvas.width / 2, padding + 60);
+        ctx.fillText(grandTotalText, exportCanvas.width / 2, padding + 60);
 
-        // رسم الـ QR Code
-        if (originalCanvas) {
-            ctx.drawImage(originalCanvas, padding, padding + textHeight, qrSize, qrSize);
-            triggerDownload(canvas.toDataURL("image/png"));
-        } else if (originalImg && originalImg.src) {
-            const img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.onload = function() {
-                ctx.drawImage(img, padding, padding + textHeight, qrSize, qrSize);
-                triggerDownload(canvas.toDataURL("image/png"));
-            };
-            img.src = originalImg.src;
-        }
-    }
-
-    function triggerDownload(imgUrl) {
+        ctx.drawImage(originalCanvas, padding, padding + textHeight, qrSize, qrSize);
+        
         const link = document.createElement('a');
-        link.href = imgUrl;
+        link.href = exportCanvas.toDataURL("image/png");
         link.download = 'CosmeticERP_Order.png';
         document.body.appendChild(link);
         link.click();
