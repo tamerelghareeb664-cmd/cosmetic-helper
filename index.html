@@ -66,8 +66,8 @@
         .btn-secondary { background-color: #e2e8f0; color: var(--text-main); margin-top: 15px;}
         .btn-warning { background-color: #fffbeb; color: var(--warning); border: 1px solid var(--warning); margin-bottom: 15px;}
 
-        input.normal-input, select.normal-select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 14px; box-sizing: border-box; outline: none; transition: 0.2s; background: white;}
-        input.normal-input:focus, select.normal-select:focus { border-color: var(--primary); }
+        input.normal-input { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 14px; box-sizing: border-box; outline: none; transition: 0.2s; background: white;}
+        input.normal-input:focus { border-color: var(--primary); }
 
         .form-group { margin-top: 20px; text-align: right; background: #fff; padding: 15px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
         .form-group label { font-size: 15px; font-weight: bold; color: var(--primary-dark); display: block; margin-bottom: 8px;}
@@ -89,33 +89,49 @@
     <p class="subtitle" id="shop-name">CosmeticERP</p>
     
     <div id="setup-section">
-        <p style="text-align: center; color: var(--text-muted);">برجاء رفع ملف بيانات المحل (TXT أو JSON) للبدء.</p>
+        <p style="text-align: center; color: var(--text-muted);">برجاء رفع ملف بيانات المحل (JSON) للبدء.</p>
         <div style="position: relative; overflow: hidden; display: inline-block; width: 100%; margin-top: 15px;">
             <button style="background-color: var(--primary);">اختيار ملف البيانات</button>
-            <input type="file" id="file-input" accept=".json, .txt" style="font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer;">
+            <input type="file" id="file-input" accept=".json" style="font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer;">
         </div>
     </div>
 
     <div id="app-section" class="hidden">
         <button onclick="clearData()" class="btn-warning">مسح وتحديث البيانات (ملف جديد)</button>
         
-        <!-- قسم البائع والمصدر (الجديد) -->
+        <!-- قسم البائع والمصدر (تم تعديله للقوائم المخصصة) -->
         <div class="form-group" style="border-color: var(--primary); background: #f0fdf4;">
             <label>👤 الموظف (البائع)</label>
-            <select id="seller-select" class="normal-select" required>
-                <option value="">-- اختر اسمك --</option>
-                <!-- سيتم التعبئة من الجافاسكريبت -->
-            </select>
+            <div class="custom-select-wrapper" id="seller-wrapper">
+                <input type="hidden" id="seller-value" value="">
+                <div class="custom-select-trigger" onclick="toggleDropdown('seller-options')">
+                    <span id="seller-text" style="color: #999;">-- اختر اسمك --</span>
+                </div>
+                <div class="custom-options" id="seller-options">
+                    <div class="search-box">
+                        <input type="text" placeholder="ابحث عن بائع..." onkeyup="filterOptions(this, 'seller-list')">
+                    </div>
+                    <div id="seller-list"></div>
+                </div>
+            </div>
 
             <label style="margin-top: 15px;">🌍 مصدر العميل</label>
-            <select id="source-select" class="normal-select" required>
-                <option value="Offline">หน้าร้าน (محل / أوفلاين)</option>
-                <option value="Facebook">فيسبوك (Facebook)</option>
-                <option value="Instagram">إنستجرام (Instagram)</option>
-                <option value="TikTok">تيك توك (TikTok)</option>
-                <option value="WhatsApp">واتساب (WhatsApp)</option>
-                <option value="Website">موقع إلكتروني (Website)</option>
-            </select>
+            <div class="custom-select-wrapper" id="source-wrapper">
+                <input type="hidden" id="source-value" value="Offline">
+                <div class="custom-select-trigger" onclick="toggleDropdown('source-options')">
+                    <span id="source-text">محل / أوفلاين (Offline)</span>
+                </div>
+                <div class="custom-options" id="source-options">
+                    <div id="source-list">
+                        <div class="custom-option" onclick="selectSource('Offline', 'محل / أوفلاين (Offline)')">محل / أوفلاين (Offline)</div>
+                        <div class="custom-option" onclick="selectSource('Facebook', 'فيسبوك (Facebook)')">فيسبوك (Facebook)</div>
+                        <div class="custom-option" onclick="selectSource('Instagram', 'إنستجرام (Instagram)')">إنستجرام (Instagram)</div>
+                        <div class="custom-option" onclick="selectSource('TikTok', 'تيك توك (TikTok)')">تيك توك (TikTok)</div>
+                        <div class="custom-option" onclick="selectSource('WhatsApp', 'واتساب (WhatsApp)')">واتساب (WhatsApp)</div>
+                        <div class="custom-option" onclick="selectSource('Website', 'موقع إلكتروني (Website)')">موقع إلكتروني (Website)</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="form-group">
@@ -208,20 +224,7 @@
         document.getElementById('setup-section').classList.add('hidden');
         document.getElementById('app-section').classList.remove('hidden');
         
-        // تعبئة البائعين
-        const sellerSelect = document.getElementById('seller-select');
-        sellerSelect.innerHTML = '<option value="">-- اختر اسمك --</option>';
-        if(sellers.length === 0) {
-            sellerSelect.innerHTML += '<option value="admin">مدير النظام</option>';
-        } else {
-            sellers.forEach(s => {
-                let option = document.createElement('option');
-                option.value = s.id;
-                option.text = s.name;
-                sellerSelect.add(option);
-            });
-        }
-
+        buildSellerDropdown();
         buildClientDropdown();
         if(document.getElementById('items-container').children.length === 0) {
             addNewRow();
@@ -248,6 +251,19 @@
         }
     }
 
+    function selectSeller(id, name) {
+        document.getElementById('seller-value').value = id;
+        document.getElementById('seller-text').innerText = name;
+        document.getElementById('seller-text').style.color = 'var(--text-main)';
+        document.getElementById('seller-options').classList.remove('open');
+    }
+
+    function selectSource(id, name) {
+        document.getElementById('source-value').value = id;
+        document.getElementById('source-text').innerText = name;
+        document.getElementById('source-options').classList.remove('open');
+    }
+
     function selectClient(id, name) {
         document.getElementById('client-value').value = id;
         document.getElementById('client-text').innerText = name;
@@ -264,6 +280,19 @@
         document.getElementById(`prod-text-${rowId}`).style.color = 'var(--text-main)';
         document.getElementById(`prod-options-${rowId}`).classList.remove('open');
         calculateTotal();
+    }
+
+    function buildSellerDropdown() {
+        const list = document.getElementById('seller-list');
+        let html = '';
+        if(sellers.length === 0) {
+            html += `<div class="custom-option" onclick="selectSeller('admin', 'مدير النظام')">مدير النظام</div>`;
+        } else {
+            sellers.forEach(s => {
+                html += `<div class="custom-option" onclick="selectSeller('${s.id}', '${s.name.replace(/'/g, "\\'")}')">${s.name}</div>`;
+            });
+        }
+        list.innerHTML = html;
     }
 
     function buildClientDropdown() {
@@ -351,9 +380,8 @@
     }
 
     function generateQR() {
-        // Validation
-        const sellerId = document.getElementById('seller-select').value;
-        if (!sellerId) { alert("برجاء اختيار اسم البائع أولاً!"); return; }
+        const sellerId = document.getElementById('seller-value').value;
+        if (!sellerId) { alert("برجاء اختيار اسم الموظف (البائع) أولاً!"); return; }
 
         const rows = document.querySelectorAll('.item-row');
         let selectedItems = [];
@@ -372,11 +400,8 @@
         }
 
         const clientVal = document.getElementById('client-value').value;
-        if (!clientVal) { alert("برجاء اختيار العميل أولاً"); return; }
+        const source = document.getElementById('source-value').value;
 
-        const source = document.getElementById('source-select').value;
-
-        // بناء البيانات المشفرة
         let payload = {
             type: "SALE",
             sellerId: sellerId,
@@ -389,7 +414,7 @@
             const newName = document.getElementById('new-client-name').value.trim();
             if (!newName) { alert("برجاء كتابة اسم العميل الجديد"); return; }
             payload.newClient = { name: newName, phone: document.getElementById('new-client-phone').value.trim() };
-        } else if (clientVal !== 'cash') {
+        } else if (clientVal !== '' && clientVal !== 'cash') {
             payload.clientId = clientVal;
         }
 
@@ -419,18 +444,13 @@
 
         if (!originalCanvas) { alert("برجاء الانتظار حتى يكتمل رسم الكود"); return; }
 
-        let clientName = "عميل نقدي";
+        let clientName = document.getElementById('client-text').innerText;
         if (document.getElementById('client-value').value === 'NEW') {
             const newName = document.getElementById('new-client-name').value.trim();
             if (newName) clientName = newName;
-        } else if (document.getElementById('client-value').value !== 'cash') {
-            clientName = document.getElementById('client-text').innerText;
         }
 
-        // استخراج اسم البائع عشان نكتبه على الفاتورة من فوق
-        const sellerSelect = document.getElementById('seller-select');
-        const sellerName = sellerSelect.options[sellerSelect.selectedIndex].text;
-
+        const sellerName = document.getElementById('seller-text').innerText;
         const grandTotalText = document.getElementById('grand-total').innerText;
 
         const exportCanvas = document.createElement('canvas');
